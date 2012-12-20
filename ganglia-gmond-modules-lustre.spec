@@ -10,7 +10,7 @@ Source0:	%{name}-%{version}.tar.bz2
 
 BuildArch:	noarch
 BuildRequires:	python-devel
-Requires:	ganglia-gmond, python
+Requires:	ganglia-gmond, python, ganglia-gmond-modules-python
 
 # This package produces no debuginfo
 %global debug_package %{nil}
