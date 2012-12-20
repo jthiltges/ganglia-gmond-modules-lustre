@@ -8,8 +8,12 @@ License:	BSD
 URL:		https://github.com/jthiltges/ganglia-gmond-modules-lustre
 Source0:	%{name}-%{version}.tar.bz2
 
+BuildArch:	noarch
 BuildRequires:	python-devel
 Requires:	ganglia-gmond, python
+
+# This package produces no debuginfo
+%global debug_package %{nil}
 
 %define conf_dir %{_sysconfdir}/ganglia
 
