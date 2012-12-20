@@ -89,6 +89,16 @@ def metric_init(params):
 
     for fs in llite_fs(LLITE_DIR):
         descriptors.append(create_desc(Desc_Skel, {
+            'name'        : 'lustre_' + fs + '_dirty_pages_hits',
+            'description' : 'Dirty page hits from %s' % fs,
+            'units'       : 'hits/s',
+        }))
+        descriptors.append(create_desc(Desc_Skel, {
+            'name'        : 'lustre_' + fs + '_dirty_pages_misses',
+            'description' : 'Dirty page misses from %s' % fs,
+            'units'       : 'misses/s',
+        }))
+        descriptors.append(create_desc(Desc_Skel, {
             'name'        : 'lustre_' + fs + '_read_bytes',
             'description' : 'Bytes read from %s' % fs,
             'units'       : 'bytes/s',
@@ -163,6 +173,10 @@ def metric_init(params):
             'description' : 'inode_permission calls to %s' % fs,
             'units'       : 'calls/s',
         }))
+
+    # Remove descriptors that aren't in our stats data
+    descriptors = [d for d in descriptors if (d['name'] in stats)]
+
     return descriptors
 
 def metric_cleanup():
