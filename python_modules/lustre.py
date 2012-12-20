@@ -111,7 +111,7 @@ def metric_init(params):
         descriptors.append(create_desc(Desc_Skel, {
             'name'        : 'lustre_' + fs + '_open',
             'description' : 'open calls to %s' % fs,
-            'units'       : 'bytes/s',
+            'units'       : 'calls/s',
         }))
         descriptors.append(create_desc(Desc_Skel, {
             'name'        : 'lustre_' + fs + '_close',
