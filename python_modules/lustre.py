@@ -68,7 +68,10 @@ def create_desc(skel, prop):
 def get_value(key):
     update_stats()
 
-    return stats[key]
+    if key in stats:
+        return stats[key]
+    else:
+        return None
 
 def metric_init(params):
     global descriptors
@@ -87,6 +90,7 @@ def metric_init(params):
         'groups'      : 'lustre',
     }
 
+    # See lustre/llite/lproc_llite.c for complete table of opcodes
     for fs in llite_fs(LLITE_DIR):
         descriptors.append(create_desc(Desc_Skel, {
             'name'        : 'lustre_' + fs + '_dirty_pages_hits',
@@ -107,6 +111,11 @@ def metric_init(params):
             'name'        : 'lustre_' + fs + '_write_bytes',
             'description' : 'Bytes written to %s' % fs,
             'units'       : 'bytes/s',
+        }))
+        descriptors.append(create_desc(Desc_Skel, {
+            'name'        : 'lustre_' + fs + '_brw_write',
+            'description' : 'brw_write calls to %s' % fs,
+            'units'       : 'pages/s',
         }))
         descriptors.append(create_desc(Desc_Skel, {
             'name'        : 'lustre_' + fs + '_brw_read',
@@ -139,8 +148,24 @@ def metric_init(params):
             'units'       : 'calls/s',
         }))
         descriptors.append(create_desc(Desc_Skel, {
+            'name'        : 'lustre_' + fs + '_fsync',
+            'description' : 'fsync calls to %s' % fs,
+            'units'       : 'calls/s',
+        }))
+        # Not currently recording readdir
+        descriptors.append(create_desc(Desc_Skel, {
+            'name'        : 'lustre_' + fs + '_setattr',
+            'description' : 'setattr calls to %s' % fs,
+            'units'       : 'calls/s',
+        }))
+        descriptors.append(create_desc(Desc_Skel, {
             'name'        : 'lustre_' + fs + '_truncate',
             'description' : 'truncate calls to %s' % fs,
+            'units'       : 'calls/s',
+        }))
+        descriptors.append(create_desc(Desc_Skel, {
+            'name'        : 'lustre_' + fs + '_flock',
+            'description' : 'flock calls to %s' % fs,
             'units'       : 'calls/s',
         }))
         descriptors.append(create_desc(Desc_Skel, {
@@ -148,6 +173,7 @@ def metric_init(params):
             'description' : 'getattr calls to %s' % fs,
             'units'       : 'calls/s',
         }))
+        # Not currently recording dir inode ops (create, mkdir, rmdir, etc.)
         descriptors.append(create_desc(Desc_Skel, {
             'name'        : 'lustre_' + fs + '_statfs',
             'description' : 'statfs calls to %s' % fs,
@@ -168,14 +194,12 @@ def metric_init(params):
             'description' : 'getxattr calls to %s' % fs,
             'units'       : 'calls/s',
         }))
+        # Not currently recording listxattr, removexattr
         descriptors.append(create_desc(Desc_Skel, {
             'name'        : 'lustre_' + fs + '_inode_permission',
             'description' : 'inode_permission calls to %s' % fs,
             'units'       : 'calls/s',
         }))
-
-    # Remove descriptors that aren't in our stats data
-    descriptors = [d for d in descriptors if (d['name'] in stats)]
 
     return descriptors
 
@@ -188,5 +212,5 @@ if __name__ == '__main__':
     metric_init({})
     for d in descriptors:
         v = d['call_back'](d['name'])
-        print 'value for %s is %d' % (d['name'],  v)
+        print 'value for %s is %s' % (d['name'],  v)
 
